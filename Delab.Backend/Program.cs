@@ -1,5 +1,6 @@
 using Delab.AccessData.Data;
 using Delab.Backend.Data;
+using Delab.Helpers;
 using Delab.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -91,10 +92,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddTransient<SeedDb>();
-
-
-
-builder.Services.AddTransient<SeedDb>();
+builder.Services.AddScoped<IUtilityTools, UtilityTools>();
+builder.Services.AddScoped<IUserHelper, UserHelper>();
 
 var app = builder.Build();
 

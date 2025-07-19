@@ -6,5 +6,6 @@ public enum UserType
     USUARIO = 2,
     AUXILIAR = 3,
     CAJERO = 4,
-    TECNICO = 5
+    TECNICO = 5,
+    CLINICA = 6
 }

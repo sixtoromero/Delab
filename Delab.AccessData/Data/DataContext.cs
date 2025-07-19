@@ -11,9 +11,14 @@ public class DataContext : IdentityDbContext<User>
     {
     }
 
+    //Manejo de UserRoles por Usuario
+    public DbSet<UserRoleDetails> UserRoleDetails => Set<UserRoleDetails>();
+
+    //Entities
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<State> States => Set<State>();
     public DbSet<City> Cities => Set<City>();
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -162,7 +162,7 @@ namespace Delab.Backend.Migrations
                     JobPosition = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     UserFrom = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhotoUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Active = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
                     CorporationId = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -304,6 +304,26 @@ namespace Delab.Backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserRoleDetails",
+                columns: table => new
+                {
+                    UserRoleDetailsId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserType = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoleDetails", x => x.UserRoleDetailsId);
+                    table.ForeignKey(
+                        name: "FK_UserRoleDetails_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -390,6 +410,23 @@ namespace Delab.Backend.Migrations
                 table: "States",
                 columns: new[] { "Name", "CountryId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoleDetails_UserId",
+                table: "UserRoleDetails",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoleDetails_UserRoleDetailsId",
+                table: "UserRoleDetails",
+                column: "UserRoleDetailsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoleDetails_UserType_UserId",
+                table: "UserRoleDetails",
+                columns: new[] { "UserType", "UserId" },
+                unique: true,
+                filter: "[UserType] IS NOT NULL AND [UserId] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -417,13 +454,16 @@ namespace Delab.Backend.Migrations
                 name: "Manager");
 
             migrationBuilder.DropTable(
+                name: "UserRoleDetails");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "States");
 
             migrationBuilder.DropTable(
-                name: "States");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Corporation");

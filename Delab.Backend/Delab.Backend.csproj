@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Delab.AccessData\Delab.AccessData.csproj" />
+    <ProjectReference Include="..\Delab.Helpers\Delab.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

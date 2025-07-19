@@ -258,8 +258,8 @@ namespace Delab.Backend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Active")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -346,6 +346,33 @@ namespace Delab.Backend.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Delab.Shared.Entities.UserRoleDetails", b =>
+                {
+                    b.Property<int>("UserRoleDetailsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserRoleDetailsId"));
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("UserType")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserRoleDetailsId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserRoleDetailsId");
+
+                    b.HasIndex("UserType", "UserId")
+                        .IsUnique()
+                        .HasFilter("[UserType] IS NOT NULL AND [UserId] IS NOT NULL");
+
+                    b.ToTable("UserRoleDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -542,6 +569,16 @@ namespace Delab.Backend.Migrations
                     b.Navigation("Corporation");
                 });
 
+            modelBuilder.Entity("Delab.Shared.Entities.UserRoleDetails", b =>
+                {
+                    b.HasOne("Delab.Shared.Entities.User", "User")
+                        .WithMany("UserRoleDetails")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -613,6 +650,11 @@ namespace Delab.Backend.Migrations
             modelBuilder.Entity("Delab.Shared.Entities.State", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("Delab.Shared.Entities.User", b =>
+                {
+                    b.Navigation("UserRoleDetails");
                 });
 #pragma warning restore 612, 618
         }
