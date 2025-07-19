@@ -1,10 +1,11 @@
 ﻿using Delab.Shared.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Delab.AccessData.Data;
 
-public class DataContext : DbContext
+public class DataContext : IdentityDbContext<User>
 {
     public DataContext(DbContextOptions options) : base(options)
     {

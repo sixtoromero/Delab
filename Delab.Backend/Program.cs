@@ -1,7 +1,12 @@
 using Delab.AccessData.Data;
 using Delab.Backend.Data;
+using Delab.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,13 +50,51 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
-builder.Services.AddTransient<SeedDb>();
  
 
 //Conexión a Base de Datos
 builder.Services.AddDbContext<DataContext>(x=> 
     x.UseSqlServer("name=DefaultConnection", option => option.MigrationsAssembly("Delab.Backend")));
+
+//Para realizar logueo de los usuarios
+builder.Services.AddIdentity<User, IdentityRole>(cfg =>
+{
+    //Agregamos Validar Correo para dar de alta al Usuario
+    cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+    cfg.SignIn.RequireConfirmedEmail = true;
+
+    cfg.User.RequireUniqueEmail = true;
+    cfg.Password.RequireDigit = false;
+    cfg.Password.RequiredUniqueChars = 0;
+    cfg.Password.RequireLowercase = false;
+    cfg.Password.RequireNonAlphanumeric = false;
+    cfg.Password.RequireUppercase = false;
+
+    //Sistema para bloquear por 5 minutos al usuario por intento fallido
+    cfg.Lockout.MaxFailedAccessAttempts = 3;
+    cfg.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  //TODO: Cambiar a 5 minutos    
+    cfg.Lockout.AllowedForNewUsers = true;
+})
+.AddDefaultTokenProviders() //Complemento Validar Correo
+.AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddCookie()
+    .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwtKey"]!)),
+        ClockSkew = TimeSpan.Zero
+    });
+
+builder.Services.AddTransient<SeedDb>();
+
+
+
+builder.Services.AddTransient<SeedDb>();
 
 var app = builder.Build();
 

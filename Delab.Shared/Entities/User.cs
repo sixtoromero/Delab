@@ -1,0 +1,39 @@
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+
+namespace Delab.Shared.Entities;
+
+public class User : IdentityUser
+{
+    [Required(ErrorMessage = "El Campo {0} es Obligatorio")]
+    [MaxLength(50, ErrorMessage = "El campo no puede ser mayor a {0} de largo")]
+    [Display(Name = "Nombres")]
+    public string FirstName { get; set; } = null!;
+
+    [Required(ErrorMessage = "El Campo {0} es Obligatorio")]
+    [MaxLength(50, ErrorMessage = "El campo no puede ser mayor a {1} de largo")]
+    [Display(Name = "Apellidos")]
+    public string LastName { get; set; } = null!;
+
+    [MaxLength(100, ErrorMessage = "El campo no puede ser mayor a {0} de largo")]
+    public string? FullName { get; set; }
+
+    [Required(ErrorMessage = "El Campo {0} es Obligatorio")]
+    [MaxLength(50, ErrorMessage = "El campo no puede ser mayor a {1} de largo")]
+    [Display(Name = "Puesto Trabajo")]
+    public string JobPosition { get; set; } = null!;
+
+    [Display(Name = "Origen")]
+    public string? UserFrom { get; set; }
+    
+    [Display(Name = "Foto")]
+    public string? PhotoUser { get; set; }
+
+    [Display(Name = "Activo")]
+    public string? Active { get; set; }
+
+    public int? CorporationId { get; set; }
+
+    //Relaciones
+    public Corporation Corporation { get; set; }
+}
