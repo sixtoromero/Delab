@@ -18,7 +18,10 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<State> States => Set<State>();
     public DbSet<City> Cities => Set<City>();
-    
+    public DbSet<SoftPlan> SoftPlans => Set<SoftPlan>();
+    public DbSet<Corporation> Corporations => Set<Corporation>();    
+    public DbSet<Manager> Managers => Set<Manager>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

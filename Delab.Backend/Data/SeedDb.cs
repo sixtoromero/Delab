@@ -21,8 +21,42 @@ public class SeedDb
         //Valida si no existe la base de datos para crearla.
         await _context.Database.EnsureCreatedAsync();
         await CheckCountries();
+        await CheckSoftPlan();
         await CheckRolesAsync();
         await CheckUserAsync("Nexxtplanet", "SPI", "soporte@nexxtplanet.net", "+1 786 503", UserType.ADMIN);
+    }
+
+    private async Task CheckSoftPlan()
+    {
+        if (!_context.SoftPlans.Any())
+        {
+            //Alimentando Planes
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 1 Mes",
+                Price = 50,
+                Meses = 1,
+                ClinicsCount = 2,
+                Active = true
+            });
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 6 Mes",
+                Price = 300,
+                Meses = 6,
+                ClinicsCount = 10,
+                Active = true
+            });
+            _context.SoftPlans.Add(new SoftPlan
+            {
+                Name = "Plan 12 Mes",
+                Price = 600,
+                Meses = 12,
+                ClinicsCount = 100,
+                Active = true
+            });
+            await _context.SaveChangesAsync();
+        }
     }
 
     private async Task CheckUserAsync(string firstName, string lastName, string email, string phone, UserType userType)

@@ -40,20 +40,20 @@ namespace Delab.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SoftPlan",
+                name: "SoftPlans",
                 columns: table => new
                 {
                     SoftPlanId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Meses = table.Column<int>(type: "int", nullable: false),
                     ClinicsCount = table.Column<int>(type: "int", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SoftPlan", x => x.SoftPlanId);
+                    table.PrimaryKey("PK_SoftPlans", x => x.SoftPlanId);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,7 +98,7 @@ namespace Delab.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Corporation",
+                name: "Corporations",
                 columns: table => new
                 {
                     CorporationId = table.Column<int>(type: "int", nullable: false)
@@ -110,25 +110,25 @@ namespace Delab.Backend.Migrations
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
                     SoftPlanId = table.Column<int>(type: "int", nullable: false),
-                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateStart = table.Column<DateTime>(type: "date", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "date", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Corporation", x => x.CorporationId);
+                    table.PrimaryKey("PK_Corporations", x => x.CorporationId);
                     table.ForeignKey(
-                        name: "FK_Corporation_Countries_CountryId",
+                        name: "FK_Corporations_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
                         principalColumn: "CountryId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Corporation_SoftPlan_SoftPlanId",
+                        name: "FK_Corporations_SoftPlans_SoftPlanId",
                         column: x => x.SoftPlanId,
-                        principalTable: "SoftPlan",
+                        principalTable: "SoftPlans",
                         principalColumn: "SoftPlanId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,14 +183,14 @@ namespace Delab.Backend.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Corporation_CorporationId",
+                        name: "FK_AspNetUsers_Corporations_CorporationId",
                         column: x => x.CorporationId,
-                        principalTable: "Corporation",
+                        principalTable: "Corporations",
                         principalColumn: "CorporationId");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Manager",
+                name: "Managers",
                 columns: table => new
                 {
                     ManagerId = table.Column<int>(type: "int", nullable: false)
@@ -210,13 +210,13 @@ namespace Delab.Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Manager", x => x.ManagerId);
+                    table.PrimaryKey("PK_Managers", x => x.ManagerId);
                     table.ForeignKey(
-                        name: "FK_Manager_Corporation_CorporationId",
+                        name: "FK_Managers_Corporations_CorporationId",
                         column: x => x.CorporationId,
-                        principalTable: "Corporation",
+                        principalTable: "Corporations",
                         principalColumn: "CorporationId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -380,13 +380,19 @@ namespace Delab.Backend.Migrations
                 column: "StateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Corporation_CountryId",
-                table: "Corporation",
+                name: "IX_Corporations_CountryId",
+                table: "Corporations",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Corporation_SoftPlanId",
-                table: "Corporation",
+                name: "IX_Corporations_Name_NroDocument",
+                table: "Corporations",
+                columns: new[] { "Name", "NroDocument" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Corporations_SoftPlanId",
+                table: "Corporations",
                 column: "SoftPlanId");
 
             migrationBuilder.CreateIndex(
@@ -396,9 +402,28 @@ namespace Delab.Backend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Manager_CorporationId",
-                table: "Manager",
+                name: "IX_Managers_CorporationId",
+                table: "Managers",
                 column: "CorporationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Managers_FullName_Nro_Document",
+                table: "Managers",
+                columns: new[] { "FullName", "Nro_Document" },
+                unique: true,
+                filter: "[FullName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Managers_UserName",
+                table: "Managers",
+                column: "UserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SoftPlans_Name",
+                table: "SoftPlans",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_States_CountryId",
@@ -451,7 +476,7 @@ namespace Delab.Backend.Migrations
                 name: "Cities");
 
             migrationBuilder.DropTable(
-                name: "Manager");
+                name: "Managers");
 
             migrationBuilder.DropTable(
                 name: "UserRoleDetails");
@@ -466,13 +491,13 @@ namespace Delab.Backend.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Corporation");
+                name: "Corporations");
 
             migrationBuilder.DropTable(
                 name: "Countries");
 
             migrationBuilder.DropTable(
-                name: "SoftPlan");
+                name: "SoftPlans");
         }
     }
 }

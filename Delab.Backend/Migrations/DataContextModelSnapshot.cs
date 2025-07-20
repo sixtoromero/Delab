@@ -68,10 +68,10 @@ namespace Delab.Backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateEnd")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("DateStart")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Imagen")
                         .HasColumnType("nvarchar(max)");
@@ -100,7 +100,10 @@ namespace Delab.Backend.Migrations
 
                     b.HasIndex("SoftPlanId");
 
-                    b.ToTable("Corporation");
+                    b.HasIndex("Name", "NroDocument")
+                        .IsUnique();
+
+                    b.ToTable("Corporations");
                 });
 
             modelBuilder.Entity("Delab.Shared.Entities.Country", b =>
@@ -191,7 +194,14 @@ namespace Delab.Backend.Migrations
 
                     b.HasIndex("CorporationId");
 
-                    b.ToTable("Manager");
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.HasIndex("FullName", "Nro_Document")
+                        .IsUnique()
+                        .HasFilter("[FullName] IS NOT NULL");
+
+                    b.ToTable("Managers");
                 });
 
             modelBuilder.Entity("Delab.Shared.Entities.SoftPlan", b =>
@@ -217,11 +227,15 @@ namespace Delab.Backend.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SoftPlanId");
 
-                    b.ToTable("SoftPlan");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("SoftPlans");
                 });
 
             modelBuilder.Entity("Delab.Shared.Entities.State", b =>
@@ -524,13 +538,13 @@ namespace Delab.Backend.Migrations
                     b.HasOne("Delab.Shared.Entities.Country", "Country")
                         .WithMany("Corporations")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Delab.Shared.Entities.SoftPlan", "SoftPlan")
                         .WithMany("Corporations")
                         .HasForeignKey("SoftPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -541,9 +555,9 @@ namespace Delab.Backend.Migrations
             modelBuilder.Entity("Delab.Shared.Entities.Manager", b =>
                 {
                     b.HasOne("Delab.Shared.Entities.Corporation", "Corporation")
-                        .WithMany("Manager")
+                        .WithMany("Managers")
                         .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Corporation");
@@ -632,7 +646,7 @@ namespace Delab.Backend.Migrations
 
             modelBuilder.Entity("Delab.Shared.Entities.Corporation", b =>
                 {
-                    b.Navigation("Manager");
+                    b.Navigation("Managers");
                 });
 
             modelBuilder.Entity("Delab.Shared.Entities.Country", b =>

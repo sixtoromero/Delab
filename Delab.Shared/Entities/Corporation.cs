@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Delab.Shared.EntitesSoftSec;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Delab.Shared.Entities;
@@ -7,8 +8,10 @@ public class Corporation
 {
     [Key]
     public int CorporationId { get; set; }
+
     [Display(Name = "Logo")]
     public string? Imagen { get; set; }
+
     [MaxLength(100, ErrorMessage = "El Maximo de caracteres es {0}")]
     [Required(ErrorMessage = "El campo {0} es Requerido")]
     [Display(Name = "Empresa/Persona")]
@@ -33,10 +36,10 @@ public class Corporation
     [Display(Name = "Pais")]
     public int CountryId { get; set; }
 
-    [Display(Name = "Plan de Software")]
     [Required(ErrorMessage = "El {0} es Obligatorio")]
+    [Display(Name = "Plan de Software")]
     public int SoftPlanId { get; set; }
-    
+
     //Tiempo Activo de la cuenta
     [Required(ErrorMessage = "El {0} es Obligatorio")]
     [DataType(DataType.Date)]
@@ -53,16 +56,23 @@ public class Corporation
     [Display(Name = "Activo")]
     public bool Active { get; set; }
 
-    //Propiedad Virtual de Acceso a imagen
+    //TODO: Cambio de ruta para Imagenes
+    //Propiedad virtual de Acceso a imagen
     public string ImageFullPath => Imagen == string.Empty || Imagen == null
-        ? $"https://localhost:7123/Images/NoImage.png"
-        : $"https://localhost:7123/Images/ImgCorporation/{Imagen}";
+        ? $"https://localhost:7204/Images/NoImage.png"
+        : $"https://localhost:7204/Images/ImgCorporation/{Imagen}";
 
     [NotMapped]
     public string? ImgBase64 { get; set; }
 
     //Relaciones
     public SoftPlan? SoftPlan { get; set; }
+
     public Country? Country { get; set; }
-    public ICollection<Manager>? Manager { get; set; }
+
+    public ICollection<Manager>? Managers { get; set; }
+
+    //public ICollection<Usuario>? Usuarios { get; set; }
+
+    //public ICollection<UsuarioRole>? UsuarioRoles { get; set; }
 }
